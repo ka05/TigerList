@@ -1,0 +1,28 @@
+<ion-view view-title="List Item">
+  <ion-content>
+    <label class="item item-input">
+      <i class="icon ion-search placeholder-icon"></i>
+      <input type="text" placeholder="Search">
+    </label>
+
+    <div class="list card">
+      <label class="item item-input item-select">
+        <div class="input-label">
+          Item Type:
+        </div>
+        <select name="item-type" id="item-type">
+          <option value="">TextBook</option>
+          <option value="">Electronic Device</option>
+          <option value="">Appliance</option>
+        </select>
+      </label>
+      <div class="item item-body">
+        <div class="col col-50" ng-click="showChangePhoto()">
+          <img ng-src="{{ItemInfo.lastPhoto}}" class="item-img" >
+        </div>
+
+      </div>
+
+    </div>
+  </ion-content>
+</ion-view>

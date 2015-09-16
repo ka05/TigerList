@@ -1,0 +1,10 @@
+/* Empty. Add your own CSS if you like */
+.bg-tiger{
+  background:rgb(247,148,30) !important;
+  color:#FFF !important;
+}
+
+.item-img{
+  max-width: 100%;
+  border:1px solid #c0c0c0;
+}
