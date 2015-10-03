@@ -1,26 +1,35 @@
 <ion-view view-title="List Item">
   <ion-content>
-    <label class="item item-input">
-      <i class="icon ion-search placeholder-icon"></i>
-      <input type="text" placeholder="Search">
-    </label>
 
     <div class="list card">
-      <label class="item item-input item-select">
-        <div class="input-label">
-          Item Type:
-        </div>
-        <select name="item-type" id="item-type">
-          <option value="">TextBook</option>
-          <option value="">Electronic Device</option>
-          <option value="">Appliance</option>
-        </select>
-      </label>
-      <div class="item item-body">
-        <div class="col col-50" ng-click="showChangePhoto()">
-          <img ng-src="{{ItemInfo.lastPhoto}}" class="item-img" >
-        </div>
 
+      <div class="item item-body">
+        <img ng-src="{{productImage}}" class="item-img item-img-frame" ng-click="showPhotoModal()">
+        <div class="list">
+          <label class="item item-input item-select">
+            <div class="input-label">
+              Item Type:
+            </div>
+            <select name="item-type" id="item-type">
+              <option value="">TextBook</option>
+              <option value="">Electronic Device</option>
+              <option value="">Appliance</option>
+            </select>
+          </label>
+          <label class="item item-input item-stacked-label">
+            <span class="input-label">Item Name</span>
+            <input type="text" placeholder="Textbook" id="item-name">
+          </label>
+          <label class="item item-input item-stacked-label">
+            <span class="input-label">Item Description</span>
+            <input type="text" placeholder="Item specifications are..." id="item-desc">
+          </label>
+          <label class="item item-input item-stacked-label">
+            <span class="input-label">Listing Price</span>
+            <input type="text" placeholder="$20" id="item-price">
+          </label>
+        </div>
+        <button class="button button-outline button-positive" ng-click="listItem()">Save Item</button>
       </div>
 
     </div>

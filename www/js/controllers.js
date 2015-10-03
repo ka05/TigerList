@@ -1,20 +1,121 @@
 angular.module('starter.controllers', [])
 
-  .service('ItemInfo', function(){
-    $ionicModal.fromTemplateUrl('templates/getphoto.html', {
-      scope: $scope
-    }).then(function(modal) {
-      $scope.getPhotoModal = modal;
-    });
+  .factory('ItemService', function(){
+    var items = [];
+
+
+    function getSearchItems(){
+      var items = JSON.parse(window.localStorage.getItem("items")),
+          searchItems = [];
+      if(items){
+        for(var i = 0; i<items.length; i++){
+          searchItems.push(items[i]);
+        }
+      }
+      return searchItems;
+    }
+
+    function getPremiumItems(){
+      // get from db later
+      // for now hard code them
+      var items = [
+        {
+          itemId:'1',
+          itemImg:'img/placeholder.jpg',
+          itemName:'Premium Item 1',
+          itemPrice:'$20',
+          itemDesc:'Premium item description'
+        },
+        {
+          itemId:'2',
+          itemImg:'img/placeholder.jpg',
+          itemName:'Premium Item 2',
+          itemPrice:'$20',
+          itemDesc:'Premium item description'
+        },
+        {
+          itemId:'3',
+          itemImg:'img/placeholder.jpg',
+          itemName:'Premium Item 3',
+          itemPrice:'$20',
+          itemDesc:'Premium item description'
+        },
+        {
+          itemId:'4',
+          itemImg:'img/placeholder.jpg',
+          itemName:'Premium Item 4',
+          itemPrice:'$20',
+          itemDesc:'Premium item description'
+        },
+        {
+          itemId:'5',
+          itemImg:'img/placeholder.jpg',
+          itemName:'Premium Item 5',
+          itemPrice:'$20',
+          itemDesc:'Premium item description'
+        }
+        ],
+        premiumItems = [];
+
+      for(var i=0; i<items.length; i++){
+        premiumItems.push(items[i]);
+      }
+      return premiumItems;
+    }
 
     return {
-      lastPhoto:"",
-      closeGetPhotoModal:function() {
-        getPhotoModal.hide();
+      GetItems: function(){
+        return getSearchItems();
       },
-
+      GetPremiumItems: function(){
+        return getPremiumItems();
+      },
+      GetItem: function(itemId){
+        var items = getPremiumItems();
+        items = items.concat(getSearchItems());
+        for(i=0;i<items.length;i++){
+          if(items[i].itemId == itemId){
+            return items[i];
+          }
+        }
+      }
     }
   })
+
+  .service('ModalService', function($ionicModal, $rootScope) {
+    // -- http://stackoverflow.com/questions/25214451/ionic-modal-windows-from-service
+    var init = function(tpl, $scope) {
+
+      var promise;
+      $scope = $scope || $rootScope.$new();
+
+      promise = $ionicModal.fromTemplateUrl(tpl, {
+        scope: $scope,
+        animation: 'slide-in-up'
+      }).then(function(modal) {
+        $scope.modal = modal;
+        return modal;
+      });
+
+      $scope.openModal = function() {
+        $scope.modal.show();
+      };
+      $scope.closeModal = function() {
+        $scope.modal.hide();
+      };
+      $scope.$on('$destroy', function() {
+        $scope.modal.remove();
+      });
+
+      return promise;
+    };
+
+    return {
+      init: init
+    }
+
+  })
+
 
 .controller('AppCtrl', function($scope, $ionicModal, $timeout) {
 
@@ -58,54 +159,173 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('GetPhotoCtrl', function($scope, Camera, ItemInfo){
 
-  $scope.getPhoto = function() {
-    Camera.getPicture({
-      quality: 75,
-      targetWidth: 320,
-      targetHeight: 320,
-      saveToPhotoAlbum: true
+.controller('ProfileCtrl', function($scope){
+
+})
+
+.controller('ItemDetailCtrl', function($scope, $stateParams, ItemService){
+  var itemId = $stateParams.itemId;
+  $scope.item = ItemService.GetItem(itemId);
+    console.log(ItemService.GetItem(itemId));
+})
+
+.controller('SearchCtrl', function($scope, ItemService){
+  $scope.premiumItems = ItemService.GetPremiumItems();
+  $scope.searchItems = ItemService.GetItems();
+
+  $scope.showFilters = function(){
+    // display filters modal
+    console.log("show filters");
+  };
+
+})
+
+.controller('ListItemCtrl', function($scope, $ionicPopup, $cordovaCamera){
+
+  $scope.productImage = "img/placeholder.jpg";
+  $scope.productId = "";
+
+  $scope.listItem = function(){
+    if(validateInputs("#item-form")){
+      // get the inputs values and store
+      var data = {
+        "itemId":$scope.productId,
+        "itemImg":$scope.productImage,
+        "itemName":$('#item-name').val(),
+        "itemDesc":$('#item-desc').val(),
+        "itemPrice":$('#item-price').val()
+        },
+        items = [];
+
+      if(window.localStorage.getItem("items")){
+        items = JSON.parse(window.localStorage.getItem("items"));
+      }
+
+      items.push(data);
+      window.localStorage["items"] = JSON.stringify(items);
+
+      resetListItemForm();
+    }
+
+  };
+
+  function resetListItemForm(){
+    $scope.productImage = "img/placeholder.jpg";
+    $('#item-name').val("");
+    $('#item-desc').val("");
+    $('#item-price').val("");
+  }
+
+  function validateInputs(_formID){
+    console.log("validating");
+    if(!checkEmptyFields(_formID)){
+      console.log("valid");
+      $scope.productId = makeid();
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+  function checkEmptyFields(_formID){
+    var oneEmpty = false;
+
+    $(_formID + ' input').each(function(){
+      if($(this).val() == ""){
+        oneEmpty = true;
+      }
+    });
+    return oneEmpty;
+  }
+
+  /* CAMERA RELATED FUNCTIONS */
+
+  function fail(error) {
+    console.log("fail: " + error.code);
+  }
+
+  function copyFile(fileEntry) {
+    var name = fileEntry.fullPath.substr(fileEntry.fullPath.lastIndexOf('/') + 1);
+    var newName = makeid() + name;
+    window.resolveLocalFileSystemURL(cordova.file.dataDirectory, function(fileSystem2) {
+        fileEntry.copyTo(
+          fileSystem2,
+          newName,
+          onCopySuccess,
+          fail
+        );
+      },
+      fail);
+  }
+
+  function onCopySuccess(entry) {
+    $scope.$apply(function () {
+      //$scope.images.push(entry.nativeURL);
+      $scope.productImage = entry.nativeURL;
+    });
+  }
+
+  function createFileEntry(fileURI) {
+    window.resolveLocalFileSystemURL(fileURI, copyFile, fail);
+  }
+
+  function makeid() {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for (var i=0; i < 5; i++) {
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+  }
+
+    // http://devdactic.com/how-to-capture-and-store-images-with-ionic/
+  //console.log($cordovaCamera);
+  var takePhoto = function(){
+      $cordovaCamera.getPicture({
+      quality: 50,
+      //targetWidth: 320,
+      //targetHeight: 320,
+      destinationType : navigator.camera.DestinationType.FILE_URI,
+      sourceType : navigator.camera.PictureSourceType.CAMERA,
+      mediaType: navigator.camera.MediaType.CAMERA,
+      allowEdit : false,
+      encodingType: navigator.camera.EncodingType.JPEG,
+      popoverOptions: CameraPopoverOptions,
+      saveToPhotoAlbum: false,
+      correctOrientation:true
     }).then(function(imageURI) {
-      console.log(imageURI);
-      ItemInfo.lastPhoto = imageURI;
+      createFileEntry(imageURI);
+        console.log(imageURI);
       // close modal
     }, function(err) {
       console.err(err);
     });
-  };
-
-
-  $scope.openPhotoLibrary = function() {
-    var options = {
+  },
+  choosePhoto = function(){
+    $cordovaCamera.getPicture({
       quality: 50,
-      destinationType: Camera.DestinationType.FILE_URI,
-      sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
-      allowEdit: true,
-      encodingType: Camera.EncodingType.JPEG,
+      destinationType: navigator.camera.DestinationType.FILE_URI,
+      sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY,
+      allowEdit: false,
+      encodingType: navigator.camera.EncodingType.PNG,
       popoverOptions: CameraPopoverOptions,
       saveToPhotoAlbum: false
-    };
+    }).then(function(imageData) {
+      createFileEntry(imageData);
 
-    Camera.getPicture(options).then(function(imageData) {
-
-      //console.log(imageData);
-      //console.log(options);
-      var image = document.getElementById('tempImage');
-      image.src = imageData;
-      ItemInfo.lastPhoto = imageData;
-
-      var server = "http://yourdomain.com/upload.php",
-        filePath = imageData;
-
-      var date = new Date();
-
-      var options = {
-        fileKey: "file",
-        fileName: imageData.substr(imageData.lastIndexOf('/') + 1),
-        chunkedMode: false,
-        mimeType: "image/jpg"
-      };
+      //var server = "http://yourdomain.com/upload.php",
+      //  filePath = imageData;
+      //
+      //var date = new Date();
+      //
+      //var options = {
+      //  fileKey: "file",
+      //  fileName: imageData.substr(imageData.lastIndexOf('/') + 1),
+      //  chunkedMode: false,
+      //  mimeType: "image/jpg"
+      //};
 
       //$cordovaFileTransfer.upload(server, filePath, options).then(function(result) {
       //  console.log("SUCCESS: " + JSON.stringify(result.response));
@@ -125,21 +345,81 @@ angular.module('starter.controllers', [])
       // error
       console.log(err);
     });
-  }
-
-})
-
-.controller('ProfileCtrl', function($scope){
-
-})
-
-.controller('ListItemCtrl', function($scope, Camera){
-  $scope.lastPhoto = "img/placeholder.jpg";
-
-  $scope.showChangePhoto = function(){
-    console.log("test");
-    $scope.getPhotoModal.show();
   };
 
+  $scope.showPhotoModal = function(){
+    var myPopup = $ionicPopup.show({
+      title: 'Add a Photo',
+      subTitle: 'Please be reasonable with what you upload',
+      scope: $scope,
+      buttons: [
+        { text: 'Cancel' },
+        {
+          text: 'Take Photo',
+          type: 'button-positive',
+          onTap: function(e) {
+            takePhoto();
+          }
+        },
+        {
+          text: 'Upload Photo',
+          type: 'button-positive',
+          onTap: function(e) {
+            choosePhoto();
+          }
+        }
+      ]
+    });
+  };
 
+})
+
+.controller('MapCtrl', function($scope, $ionicLoading){
+    $scope.positions = [{
+      lat: 43.080017,
+      lng: -77.682456
+    }];
+
+    $scope.$on('mapInitialized', function(event, map) {
+      $scope.map = map;
+    });
+
+    $scope.centerOnMe= function(){
+      $scope.positions = [];
+
+
+      $ionicLoading.show({
+        template: 'Loading...'
+      });
+
+
+      navigator.geolocation.getCurrentPosition(function(position) {
+        var pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+        $scope.positions.push({lat: pos.k,lng: pos.B});
+        console.log(pos);
+        $scope.map.setCenter(pos);
+        $ionicLoading.hide();
+      });
+
+    };
+
+})
+
+.controller('FileStorageCtrl', function($scope){
+
+    $scope.saveToFile = function(){
+      var demoTxt = $('demo-txt').val();
+
+      // save demo text to file
+    };
+
+    $scope.readFromFile = function(){
+      // get file
+
+      // parse out text
+      var txtFromFile = "";
+
+      // set text of input to text retrieved from file
+      $('demo-txt').val(txtFromFile);
+    }
 });

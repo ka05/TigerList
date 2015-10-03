@@ -1,0 +1,17 @@
+<ion-view view-title="Map">
+  <ion-content>
+    <!-- map directive-->
+    <!--<app-map style="height:400px;"-->
+             <!--center="basel"-->
+             <!--zoom="15"-->
+             <!--markers="whoiswhere">-->
+    <!--</app-map>-->
+    <map center="43.07493,-89.381388" zoom="15">
+      <!-- ngRepeat: pos in positions -->
+      <marker ng-repeat=" pos in positions" position="{{pos.lat}},{{pos.lng}}"></marker>
+    </map>
+    <div class="row">
+      <button class="button button-outline button-positive col" ng-click="centerOnMe()">Locate Me</button>
+    </div>
+  </ion-content>
+</ion-view>

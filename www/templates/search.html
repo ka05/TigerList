@@ -1,5 +1,50 @@
 <ion-view view-title="Search">
   <ion-content>
-    <h1>Search</h1>
+    <label class="item item-input">
+      <i class="icon ion-search placeholder-icon"></i>
+      <input type="text" placeholder="Search">
+      <i class="icon ion-levels placeholder-icon" id="filters-icon" ng-click="showFilters()"></i>
+    </label>
+    <div class="">
+
+      <div id="premium-cont">
+        <ion-scroll direction="x">
+          <div class="row">
+            <div class="col col-50" ng-repeat="premiumItem in premiumItems">
+              <div class="list card">
+                <div class="item item-body no-pad">
+                  <a href="#/app/itemdetail/{{ premiumItem.itemId }}">
+                    <img ng-src="{{premiumItem.itemImg}}" class="item-img" ng-attr-id="{{ 'item-' + premiumItem.itemId }}" >
+                  </a>
+                </div>
+                <div class="item item-divider">
+                  <span style="float:right">{{premiumItem.itemPrice}}</span>
+                  <p>{{premiumItem.itemName}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ion-scroll>
+      </div>
+
+      <div id="result-cont">
+        <div class="item item-divider">
+          <h1>Search Results</h1>
+        </div>
+          <div class="col col-50 flt-l" ng-repeat="searchItem in searchItems">
+            <div class="list card">
+              <div class="item item-body no-pad">
+                <a href="#/app/itemdetail/{{ searchItem.itemId }}">
+                  <img ng-src="{{searchItem.itemImg}}" class="item-img" ng-attr-id="{{ 'item-' + searchItem.itemId }}">
+                </a>
+              </div>
+              <div class="item item-divider">
+                <span style="float:right">{{searchItem.itemPrice}}</span>
+                <p>{{searchItem.itemName}}</p>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
   </ion-content>
 </ion-view>
