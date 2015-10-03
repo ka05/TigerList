@@ -281,20 +281,21 @@ angular.module('starter.controllers', [])
   }
 
     // http://devdactic.com/how-to-capture-and-store-images-with-ionic/
+    // https://github.com/driftyco/ionic-example-cordova-camera/blob/master/www/js/app.js
   //console.log($cordovaCamera);
   var takePhoto = function(){
-      $cordovaCamera.getPicture({
-      quality: 50,
+    $cordovaCamera.getPicture({
+      //quality: 50,
       //targetWidth: 320,
       //targetHeight: 320,
       destinationType : navigator.camera.DestinationType.FILE_URI,
       sourceType : navigator.camera.PictureSourceType.CAMERA,
-      mediaType: navigator.camera.MediaType.CAMERA,
+      //mediaType: navigator.camera.MediaType.CAMERA,
       allowEdit : false,
-      encodingType: navigator.camera.EncodingType.JPEG,
+      encodingType: navigator.camera.EncodingType.PNG,
       popoverOptions: CameraPopoverOptions,
-      saveToPhotoAlbum: false,
-      correctOrientation:true
+      saveToPhotoAlbum: false
+      //correctOrientation:true
     }).then(function(imageURI) {
       createFileEntry(imageURI);
         console.log(imageURI);
@@ -405,21 +406,73 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('FileStorageCtrl', function($scope){
+.controller('FileStorageCtrl', function($scope, $cordovaFile){
 
     $scope.saveToFile = function(){
-      var demoTxt = $('demo-txt').val();
+      var demoTxt = '{ "value" : "' + $('#demo-txt').val() + '"}',
+          fileName = "test.json";
 
       // save demo text to file
+      writeToFile(fileName, demoTxt);
     };
 
     $scope.readFromFile = function(){
       // get file
-
+      console.log("readFromFile");
       // parse out text
-      var txtFromFile = "";
+      var txtFromFile = "";// $cordovaFile.readAsText(cordova.file.dataDirectory, 'test.json');
 
-      // set text of input to text retrieved from file
-      $('demo-txt').val(txtFromFile);
+      $cordovaFile.readAsText(cordova.file.dataDirectory, 'test.json').then(function(result) {
+        console.log("readAsText: " + result);
+
+        // set text of input to text retrieved from file
+        $('#demo-txt').val(JSON.parse(result).value);
+
+      }, function(err) {
+        console.log("readAsText: " + JSON.stringify(err));
+      });
+    };
+
+
+    function createFile(_fileName, _callback){
+      $cordovaFile.createFile(cordova.file.dataDirectory, _fileName, true).then(function(result) {
+        console.log("createFile: " + JSON.stringify(result));
+        _callback();
+      }, function(err) {
+        console.log("createFile: " + JSON.stringify(err));
+      });
+    }
+
+    function writeFile(_fileName, _data){
+      // '{"test":"test"}'
+      $cordovaFile.writeFile(cordova.file.dataDirectory, _fileName, _data, true).then( function(result) {
+        // Success!
+        console.log("writeFile: " + JSON.stringify(result));
+      }, function(err) {
+        // An error occured. Show a message to the user
+        console.log("writeFile: " + JSON.stringify(err));
+      });
+    }
+
+    function writeToFile(_fileName, _data){
+      $cordovaFile.checkFile(cordova.file.dataDirectory, _fileName)
+        .then(function (result) {
+          console.log("checkFile: " + JSON.stringify(result));
+          if( result.isFile ){
+            console.log("file exists");
+            writeFile(_fileName, _data);
+          }else{
+            console.log("file does not exist");
+            // file doesnt exist
+            createFile(_fileName, function(){
+              writeFile(_fileName, _data);
+            });
+          }
+          // success
+        }, function (err) {
+          // error
+          console.log("checkFile: " + JSON.stringify(err));
+          return false;
+        });
     }
 });
