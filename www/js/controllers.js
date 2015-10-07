@@ -173,9 +173,11 @@ angular.module('starter.controllers', [])
 
   $scope.reportEvent = function(event)  {
     console.log('Reporting : ' + event.type);
+    event.target.style.backgroundColor = "red";
 
     $timeout(function() {
       $scope.gestureData[event.type]++;
+      event.target.style.backgroundColor = "";
     })
   }
 
@@ -189,9 +191,6 @@ angular.module('starter.controllers', [])
       var gestureType = attrs.gestureType;
 
       switch(gestureType) {
-        case 'swipe':
-          $ionicGesture.on('swipe', scope.reportEvent, elem);
-          break;
         case 'swiperight':
           $ionicGesture.on('swiperight', scope.reportEvent, elem);
           break;
@@ -200,12 +199,7 @@ angular.module('starter.controllers', [])
           break;
         case 'doubletap':
           $ionicGesture.on('doubletap', scope.reportEvent, elem);
-          break;
-        case 'tap':
-          $ionicGesture.on('tap', scope.reportEvent, elem);
-          break;
-        case 'scroll':
-          $ionicGesture.on('scroll', scope.reportEvent, elem);
+          console.log(elem);
           break;
       }
 
