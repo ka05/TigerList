@@ -1,0 +1,40 @@
+<ion-view view-title="Gestures">
+  <ion-content>
+    <div class="list card">
+      <div class="item item-body">
+        <h2>Gestures Demo</h2>
+        http://codepen.io/calendee/pen/fbEsw/
+        <div class="row">
+          <div class="col">
+            Swipe Right: {{gestureData.swiperight}}
+          </div>
+          <div class="col">
+            Swipe Left: {{gestureData.swipeleft}}
+          </div>
+          <div class="col">
+            Double Tap: {{gestureData.doubletap}}
+          </div>
+        </div>
+        <div class="row">
+          <div detect-gestures gesture-type="swiperight" class="col swipe-box">
+            <p>
+              Swipe Right on me
+            </p>
+          </div>
+          <div detect-gestures gesture-type="swipeleft" class="col swipe-box">
+            <p>
+              Swipe Left on me
+            </p>
+          </div>
+
+          <div detect-gestures gesture-type="doubletap" class="col swipe-box">
+            <p>
+              Double Tap me
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </ion-content>
+</ion-view>

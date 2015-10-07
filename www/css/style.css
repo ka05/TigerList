@@ -45,3 +45,20 @@
   /*overflow-y: hidden;*/
   /*white-space: nowrap;*/
 }
+
+.item-price{
+  text-align: center;
+  font-weight: bold;
+}
+
+.item-name{
+  text-align: center;
+
+}
+
+.swipe-box{
+  height: 120px;
+  background-color: #BBB;
+  text-align: center;
+  margin:1em;
+}

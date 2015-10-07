@@ -63,6 +63,16 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
       }
     })
 
+    .state('app.gestures', {
+      url: '/gestures',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/gestures.html',
+          controller: 'GesturesCtrl'
+        }
+      }
+    })
+
     .state('app.profile', {
       url: '/profile',
       views: {
