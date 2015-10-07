@@ -327,17 +327,17 @@ angular.module('starter.controllers', [])
   //console.log($cordovaCamera);
   var takePhoto = function(){
     $cordovaCamera.getPicture({
-      //quality: 50,
+      quality: 50,
       //targetWidth: 320,
       //targetHeight: 320,
       destinationType : navigator.camera.DestinationType.FILE_URI,
       sourceType : navigator.camera.PictureSourceType.CAMERA,
-      //mediaType: navigator.camera.MediaType.CAMERA,
-      allowEdit : false,
-      encodingType: navigator.camera.EncodingType.PNG,
+      mediaType: navigator.camera.MediaType.CAMERA,
+      allowEdit : true,
+      encodingType: navigator.camera.EncodingType.JPEG,
       popoverOptions: CameraPopoverOptions,
-      saveToPhotoAlbum: false
-      //correctOrientation:true
+      saveToPhotoAlbum: false,
+      correctOrientation:true
     }).then(function(imageURI) {
       createFileEntry(imageURI);
         console.log(imageURI);

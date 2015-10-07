@@ -12,7 +12,7 @@
           <div class="row">
             <div class="col col-50" ng-repeat="premiumItem in premiumItems">
               <div class="list card">
-                <div class="item item-body no-pad">
+                <div class="item item-image">
                   <a href="#/app/itemdetail/{{ premiumItem.itemId }}">
                     <img ng-src="{{premiumItem.itemImg}}" class="item-img" ng-attr-id="{{ 'item-' + premiumItem.itemId }}" >
                   </a>
@@ -33,7 +33,7 @@
         </div>
           <div class="col col-50 flt-l" ng-repeat="searchItem in searchItems">
             <div class="list card">
-              <div class="item item-body no-pad">
+              <div class="item item-image">
                 <a href="#/app/itemdetail/{{ searchItem.itemId }}">
                   <img ng-src="{{searchItem.itemImg}}" class="item-img" ng-attr-id="{{ 'item-' + searchItem.itemId }}">
                 </a>
